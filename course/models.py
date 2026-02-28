@@ -60,5 +60,8 @@ class Submission(models.Model):
     selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+    def is_get_score(self):
+        return self.selected_choice.is_correct
+
     def __str__(self):
         return f"{self.enrollment.user.username} - {self.question.question_text}"

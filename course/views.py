@@ -8,27 +8,48 @@ def course_detail(request, course_id):
     return render(request, 'courses/course_details_bootstrap.html', {'course': course})
 
 
-def submit(request):
+from django.shortcuts import render, redirect
+from .models import Question, Choice, Submission, Enrollment, Course
+
+
+def submit(request, course_id):
     if request.method == "POST":
-        score = 0
-        questions = Question.objects.all()
+        enrollment = Enrollment.objects.first()  # simple for assignment
 
-        for question in questions:
-            selected = request.POST.get(str(question.id))
-            if selected:
-                choice = Choice.objects.get(id=selected)
-                if choice.is_correct:
-                    score += 1
+        for question in Question.objects.all():
+            selected_choice_id = request.POST.get(str(question.id))
+            if selected_choice_id:
+                choice = Choice.objects.get(id=selected_choice_id)
+                Submission.objects.create(
+                    enrollment=enrollment,
+                    question=question,
+                    selected_choice=choice
+                )
 
-        return render(request, 'courses/result.html', {'score': score})
+        submission = Submission.objects.latest('id')
+
+        return redirect('show_exam_result', course_id=course_id, submission_id=submission.id)
 
     questions = Question.objects.all()
     return render(request, 'courses/exam.html', {'questions': questions})
 
 
-def show_exam_result(request):
-    submissions = Submission.objects.all()
-    return render(request, 'courses/show_result.html', {'submissions': submissions})
+def show_exam_result(request, course_id, submission_id):
+    submissions = Submission.objects.filter(id=submission_id)
+
+    total_score = 0
+    possible_score = submissions.count()
+
+    for submission in submissions:
+        if submission.is_get_score():
+            total_score += 1
+
+    context = {
+        'total_score': total_score,
+        'possible_score': possible_score
+    }
+
+    return render(request, 'courses/result.html', context)
 
 
 def final_result(request):
