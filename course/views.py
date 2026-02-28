@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Course, Question, Choice, Submission
+from django.shortcuts import render
 
 
 def course_detail(request, course_id):
@@ -28,3 +29,7 @@ def submit(request):
 def show_exam_result(request):
     submissions = Submission.objects.all()
     return render(request, 'courses/show_result.html', {'submissions': submissions})
+
+
+def final_result(request):
+    return render(request, 'courses/result.html')
