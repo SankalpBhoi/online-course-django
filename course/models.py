@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Course(models.Model):
@@ -15,6 +16,26 @@ class Lesson(models.Model):
     def __str__(self):
         return self.title
 
+
+class Enrollment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.name}"
+
+class Instructor(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Instructor: {self.user.username}"
+
+
+class Learner(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Learner: {self.user.username}"
 
 class Question(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
@@ -34,9 +55,10 @@ class Choice(models.Model):
 
 
 class Submission(models.Model):
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "Submission"
+        return f"{self.enrollment.user.username} - {self.question.question_text}"

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from .models import Course, Lesson, Question, Choice, Submission
+from .models import Course, Lesson, Question, Choice, Submission, Instructor, Learner
 from django.utils.html import format_html
 from django.urls import reverse
 
@@ -30,3 +30,5 @@ admin.site.register(Lesson, LessonAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Choice)
 admin.site.register(Submission)
+admin.site.register(Instructor)
+admin.site.register(Learner)
